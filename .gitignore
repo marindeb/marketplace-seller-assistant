@@ -1,0 +1,18 @@
+# Data and generated indexes
+data/chroma_index/
+data/*.csv
+
+# Notebooks checkpoints
+notebooks/.ipynb_checkpoints/
+
+# Logs
+logs/
+
+# Virtual environments
+.mistral-agent-env/
+venv/
+.mistral-env/
+
+# Pytest cache
+.pytest_cache/
+__pycache__/

@@ -1,0 +1,29 @@
+# ruff.toml
+
+line-length = 80
+indent-width = 4
+target-version = "py310"
+extend-exclude = [
+    "notebooks/",
+    "**/*.ipynb",
+    "logs/",
+    "data/",
+    "__pycache__/",
+    ".pytest_cache/",
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[lint.isort]
+combine-as-imports = true
+known-first-party = ["app"]
+known-third-party = ["langchain", "pandas", "os", "logging"]
+lines-after-imports = 2
