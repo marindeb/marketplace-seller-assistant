@@ -1,154 +1,75 @@
-# Mistral E-commerce Intelligence Agent
+# Marketplace Seller Assistant
 
-A production-ready RAG + Agent system powered by Mistral 7B (via Ollama) and ChromaDB.
+An assistant designed for **marketplace sellers**.
+It helps vendors understand platform policies, optimize catalog and pricing, improve conversion, and avoid penalties.
+All answers are **grounded and cited**. The model **refuses** to answer when uncertain.
 
-This project simulates an internal e-commerce assistant capable of:
-- Answering product-related questions grounded in internal docs (RAG)
-- Running analytics on operational data (returns, delivery performance…) using a Pandas agent
-- Exposing an API (FastAPI) + optional UI (Streamlit)
+## Capabilities
+- Answers about marketplace policies (allowed products, returns, penalties)
+- Provides catalog and conversion insights based on synthetic datasets
+- Suggests operational improvements (price, logistics, ads)
+- Responds with citations and confidence
+- Refuses to answer if not supported by documentation
 
----
+## Architecture
 
-## Architecture Overview
+User query
+→ Intent classifier (LLM)
+→ Router (policy / product / logistics / unknown)
+→ RAG or data lookup or rule module
+→ LLM response (citations + guardrails)
 
-| Component | Purpose |
-|---|---|
-RAG Pipeline | Semantic product knowledge grounded in internal docs
-Pandas Agent | Data analysis + Python execution sandbox
-FastAPI | Unified interface for frontends / automation
-Streamlit UI | Optional demo interface
-ChromaDB | Vector store for embeddings
-Ollama (Mistral) | Local LLM inference
+### Components
+- Python 3.10
+- FastAPI
+- ChromaDB or FAISS for vector storage
+- LangChain for RAG orchestration
+- Pandas for data lookup & reasoning
+- LoRA fine-tuning (style + refusal behavior)
+- Evaluation with Ragas + LLM judge
 
-Pipeline:
+## Data
+data/
+docs/ # Public marketplace docs
+synthetic/
+products.csv
+sales.csv
+benchmarks.csv
 
-```
-User Query → Router → RAG OR Pandas Agent → Mistral → Response
-```
+pgsql
+Copier le code
 
----
+## Evaluation Metrics
+| Phase | Metric | Purpose |
+|---|---|---|
+| Retrieval | Recall@k | Context relevance |
+| Grounding | Faithfulness | Consistency with retrieved data |
+| Response | Citation compliance | Cited sources in output |
+| Behavior | Refusal accuracy | Refuse when uncertain |
+| UX | Helpfulness | LLM-judge pairwise comparison |
 
-## Tech Stack
-
-- Python 3.10.13
-- Mistral 7B via Ollama
-- LangChain
-- ChromaDB
-- FastAPI + Streamlit
-- Pytest
-- Ruff + Pre-commit
-
----
-
-## Project Structure
-
-```
-mistral-ecommerce-agent/
-├── app/
-│   ├── agent.py
-│   ├── rag_pipeline.py
-│   ├── main.py
-│   └── constants.py
-├── data/
-├── tests/
-├── ui/
-└── requirements*.txt
-```
-
----
-
-## Setup
-
-### Python Environment
-
-```bash
-pyenv install 3.10.13
-pyenv virtualenv 3.10.13 mistral-agent-env
-pyenv activate mistral-agent-env
-
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### Dev Tools
-
-```bash
-pip install -r requirements-dev.txt
-pre-commit install
-```
-
----
-
-## Run Ollama
-
-```bash
-ollama serve &
-ollama pull mistral
-```
-
----
-
-## Run System
-
-### Build RAG DB
-```bash
-python -m app.rag_pipeline
-```
-
-### API
-```bash
-uvicorn app.main:app --reload
-```
-
-Docs: http://127.0.0.1:8000/docs
-
-### Streamlit
-```bash
-streamlit run ui/app.py
-```
-
----
-
-## Use Pandas Agent
-
-```python
-from app.agent import ask_agent
-ask_agent("Which categories have the highest return rate?")
-```
-
----
-
-## Tests
-```bash
-pytest -v
-```
-
----
-
-## Reset Vector DB
-
-Force rebuild:
-```bash
-python -m app.rag_pipeline --rebuild
-```
-
-Manually clear:
-```bash
-rm -rf data/chroma_index
-```
-
----
+The **golden set** (~100 curated Q&A pairs) covers topics such as product eligibility, delays, conversion levers, and penalties.
 
 ## Roadmap
+- [x] RAG baseline
+- [ ] Golden set creation
+- [ ] Citations + refusal rules
+- [ ] Rerank + evaluation pipeline
+- [ ] Synthetic dataset generation
+- [ ] LoRA fine-tuning (marketplace style)
+- [ ] Simple monitoring (latency, hallucination rate)
 
-- Add citations + confidence scores
-- Sandbox execution fully
-- CI/CD + Docker Compose
-- Incremental RAG index updates
-- Multi-model support
+## Run
+```bash
+uvicorn app.main:app --reload
+Docs: http://127.0.0.1:8000/docs
+```
+
+Important
+This project uses synthetic and public data only.
+It does not use any proprietary or confidential marketplace data.
+
+yaml
+Copier le code
 
 ---
-
-## License
-
-MIT

@@ -14,6 +14,11 @@ ollama==0.1.8
 transformers==4.41.0
 accelerate==0.28.0
 
+mistralai
+markdown-it-py
+python-dotenv    # if you plan environment variables for API keys
+
+
 # API / Front
 fastapi==0.110.0
 uvicorn==0.29.0
