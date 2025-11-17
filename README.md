@@ -1,75 +1,78 @@
 # Marketplace Seller Assistant
 
-An assistant designed for **marketplace sellers**.
-It helps vendors understand platform policies, optimize catalog and pricing, improve conversion, and avoid penalties.
-All answers are **grounded and cited**. The model **refuses** to answer when uncertain.
+A production-grade AI assistant for **marketplace sellers**, built to demonstrate advanced applied AI engineering.
+It helps vendors understand platform policies, improve listings, analyze performance, and make data-driven decisions.
+All answers are **grounded, cited**, and the system **refuses** when information is missing.
 
 ## Capabilities
-- Answers about marketplace policies (allowed products, returns, penalties)
-- Provides catalog and conversion insights based on synthetic datasets
-- Suggests operational improvements (price, logistics, ads)
-- Responds with citations and confidence
-- Refuses to answer if not supported by documentation
+- Policy guidance (eligibility, prohibited items, penalties)
+- Growth and listing recommendations
+- Seller analytics via a Pandas agent
+- Strict grounded answers with citations
+- Intent routing across multiple specialized agents
+- Deterministic refusal behavior when documentation is insufficient
 
-## Architecture
+## Architecture Overview
 
-User query
-→ Intent classifier (LLM)
-→ Router (policy / product / logistics / unknown)
-→ RAG or data lookup or rule module
-→ LLM response (citations + guardrails)
+```
+User Query
+   ↓
+Intent Classifier (Mistral, Ollama)
+   ↓
+Router
+   → Policy RAG Agent
+   → Recommendation RAG Agent
+   → Analytics Agent (Pandas)
+   → Refusal Agent
+   ↓
+Grounded LLM Response (citations + guardrails)
+```
 
-### Components
+### Core Components
 - Python 3.10
-- FastAPI
-- ChromaDB or FAISS for vector storage
-- LangChain for RAG orchestration
-- Pandas for data lookup & reasoning
-- LoRA fine-tuning (style + refusal behavior)
-- Evaluation with Ragas + LLM judge
+- FastAPI API layer
+- ChromaDB vector store (HuggingFace embeddings)
+- LangChain RetrievalQA orchestration
+- Ollama (Mistral) for routing and generation
+- Pandas analytics agent for structured reasoning
+- Extensible multi-agent design
+
+## RAG System
+
+- Markdown documentation automatically loaded and chunked
+- Vector index built with Sentence-Transformer embeddings
+- Policy and Recommendation RAG chains with strict grounding rules
+- Confidence scoring and fallback refusal logic
+- Future-ready for reranking and long-form retrieval
 
 ## Data
-data/
-docs/ # Public marketplace docs
-synthetic/
-products.csv
-sales.csv
-benchmarks.csv
+(Currently being regenerated for the new architecture)
 
-pgsql
-Copier le code
+```
+data/
+  docs/                   # Marketplace X seller documentation
+  synthetic/              # Generated product, order, and return datasets
+```
+
+Planned tabular datasets:
+- products.csv (catalog)
+- orders.csv (order history)
+- returns.csv (returns & disputes)
+- seller_metrics.csv (aggregated KPIs)
+- scenarios.json (end-to-end test scenarios)
 
 ## Evaluation Metrics
 | Phase | Metric | Purpose |
-|---|---|---|
-| Retrieval | Recall@k | Context relevance |
-| Grounding | Faithfulness | Consistency with retrieved data |
-| Response | Citation compliance | Cited sources in output |
-| Behavior | Refusal accuracy | Refuse when uncertain |
-| UX | Helpfulness | LLM-judge pairwise comparison |
+|-------|--------|---------|
+| Retrieval | Recall@k | Measures context quality |
+| Grounding | Faithfulness | Ensures answers use retrieved content |
+| Response | Citation compliance | Ensures all claims are sourced |
+| Behavior | Refusal accuracy | Prevent unsafe or unsupported answers |
+| Overall | LLM-judge | Helpfulness and correctness evaluation |
 
-The **golden set** (~100 curated Q&A pairs) covers topics such as product eligibility, delays, conversion levers, and penalties.
+A **golden set** (50–100 curated Q/A) will benchmark the whole pipeline.
 
 ## Roadmap
-- [x] RAG baseline
-- [ ] Golden set creation
-- [ ] Citations + refusal rules
-- [ ] Rerank + evaluation pipeline
-- [ ] Synthetic dataset generation
-- [ ] LoRA fine-tuning (marketplace style)
-- [ ] Simple monitoring (latency, hallucination rate)
-
-## Run
-```bash
-uvicorn app.main:app --reload
-Docs: http://127.0.0.1:8000/docs
-```
-
-Important
-This project uses synthetic and public data only.
-It does not use any proprietary or confidential marketplace data.
-
-yaml
-Copier le code
-
----
+- [x] Modular RAG architecture
+- [x] Multi-agent router (policy / recommendation / analytics / refusal)
+- [x] Full test suite for router & R
